@@ -139,6 +139,7 @@ our (%opt, %data, %checks);
   'debug'           => 0,
   'defaults'        => undef,
   'help'            => 0,
+  'backend'         => undef,
 );
 
 # Somewhere to store messages
@@ -156,6 +157,7 @@ sub main {
     'O=s{1,}' => \@overrides,              'overrides=s{1,}'  => \@overrides,
     'D=s'     => \$opt{'defaults'},        'defaults=s'       => \$opt{'defaults'},
     '-h'      => \$opt{'help'},            '--help'           => \$opt{'help'},
+    'B=s'     => \$opt{'backend'},         'backend=s'        => \$opt{'backend'},
   ) or pod2usage(
     -message => sprintf("%s %s by %s", $_program, $_version, $_author),
     -exitval => EXIT_UNKNOWN,
@@ -519,6 +521,9 @@ sub check_backends {
   foreach my $service (sort keys %data) {
     next unless $data{$service}{'type'} eq TYPE_BACKEND;
     next if $checks{$service}{'state'} eq 'x';
+    if (defined $opt{'backend'}) {
+    	next unless $service eq $opt{'backend'};
+    }
     _debug('check_backends', _('checking BACKEND %s', $service));
 
     my ($msg, $total, $up, $down, $disabled) = ('',0,0,0,0);
